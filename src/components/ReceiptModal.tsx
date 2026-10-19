@@ -33,18 +33,7 @@ export default function ReceiptModal({
     setShopName(value);
   };
 
-  // const copy = async () => {
-  //   try {
-  //     await navigator.clipboard.writeText(text);
-  //     setCopied(true);
-  //     setTimeout(() => setCopied(false), 1800);
-  //   } catch {
-  //     setCopied(false);
-  //   }
-  // };
-
-  // The image is prepared in advance, so the click can copy it instantly and open the
-  // chat while the browser still counts it as a real user click.
+  // The image is prepared in advance...
   const blobRef = useRef<Blob | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -123,6 +112,23 @@ export default function ReceiptModal({
     setStep("saved");
   };
 
+  // Helper: split "Rs. 420" into currency + amount nodes for reliable alignment.
+  const renderRs = (formatted?: string | null) => {
+    const s = (formatted ?? "").toString();
+    // match "Rs.", "Rs", "Rs." with optional space followed by amount
+    const m = s.match(/^(Rs\.?)\s*(.*)$/i);
+    if (m) {
+      return (
+        <>
+          <span className="mn-currency">{m[1]}</span>
+          <span className="mn-amount">{m[2]}</span>
+        </>
+      );
+    }
+    // fallback: render whole string as amount
+    return <span className="mn-amount">{s}</span>;
+  };
+
   return (
     <Modal title="Receipt" onClose={onClose} top dismissOnBackdrop>
       <div className="mn-receipt-body">
@@ -167,7 +173,7 @@ export default function ReceiptModal({
                   {it.qty} {it.unit} &times; {formatRs(it.price)}
                 </span>
                 <span className="mn-it-amt mn-num">
-                  {formatRs(lineTotal(it))}
+                  {renderRs(formatRs(lineTotal(it)))}
                 </span>
               </li>
             ))}
@@ -177,18 +183,20 @@ export default function ReceiptModal({
             <li className="mn-grand">
               <span>Total</span>
               <span className="mn-lead" aria-hidden="true" />
-              <span className="mn-num">{formatRs(sale.total)}</span>
+              <span className="mn-num">{renderRs(formatRs(sale.total))}</span>
             </li>
             <li>
               <span>Paid</span>
               <span className="mn-lead" aria-hidden="true" />
-              <span className="mn-num">{formatRs(sale.paid)}</span>
+              <span className="mn-num">{renderRs(formatRs(sale.paid))}</span>
             </li>
             {!settled && (
               <li>
                 <span>Balance due</span>
                 <span className="mn-lead" aria-hidden="true" />
-                <span className="mn-num">{formatRs(sale.balanceDue)}</span>
+                <span className="mn-num">
+                  {renderRs(formatRs(sale.balanceDue))}
+                </span>
               </li>
             )}
           </ul>
