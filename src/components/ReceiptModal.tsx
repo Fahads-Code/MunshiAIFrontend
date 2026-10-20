@@ -174,7 +174,7 @@ export default function ReceiptModal({
           </ul>
 
           <ul className="mn-slip-totals">
-            <li className="mn-grand">
+            <li>
               <span>Total</span>
               <span className="mn-lead" aria-hidden="true" />
               <span className="mn-num">{formatRs(sale.total)}</span>
