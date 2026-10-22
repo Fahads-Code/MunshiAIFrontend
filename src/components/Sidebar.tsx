@@ -140,6 +140,16 @@ export default function Sidebar({
       ),
     },
     {
+      label: "Smart Assistant",
+      path: "/assistant",
+      icon: (
+        <svg className="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3 14 8 19 6 17 11 21 14 15 15 14 21 10 17 5 19 7 14 3 11 9 10Z" />
+          <circle cx="12" cy="12" r="2" />
+        </svg>
+      ),
+    },
+    {
       label: "Customers",
       path: "/customers",
       icon: (

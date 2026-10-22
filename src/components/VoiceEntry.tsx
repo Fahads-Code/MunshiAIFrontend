@@ -124,6 +124,8 @@ export default function VoiceEntry({
 
   const recRef = useRef<SpeechRec | null>(null);
   const finalRef = useRef("");
+  // Aakhri dafa jo bhi sunai diya (final ya interim) — end par isi ka fallback hoga
+  const spokenRef = useRef("");
 
   /* ---------------- Naam matching ---------------- */
 
@@ -240,6 +242,7 @@ export default function VoiceEntry({
     setError("");
     setParsed(false);
     finalRef.current = "";
+    spokenRef.current = "";
     setTranscript("");
 
     const rec = new Ctor();
@@ -257,7 +260,9 @@ export default function VoiceEntry({
         else interim += r[0].transcript;
       }
       finalRef.current = finalText;
-      setTranscript(`${finalText} ${interim}`.trim());
+      const full = `${finalText} ${interim}`.trim();
+      if (full) spokenRef.current = full;
+      setTranscript(full);
     };
 
     rec.onerror = (e) => {
@@ -273,8 +278,12 @@ export default function VoiceEntry({
     rec.onend = () => {
       setListening(false);
       recRef.current = null;
-      const t = finalRef.current.trim();
+      // Chrome aksar interim (non-final) result par hi band ho jata hai —
+      // sirf final par depend karenge to kuch nahi hoga. Dono ka fallback.
+      const t = finalRef.current.trim() || spokenRef.current.trim();
       if (t) void parseRef.current(t);
+      else
+        setError("Kuch sunai nahi diya. Mic ke paas bol kar dobara koshish karein, ya neeche likh dein.");
     };
 
     recRef.current = rec;
@@ -307,6 +316,7 @@ export default function VoiceEntry({
     setTxType(null);
     setChoice(null);
     finalRef.current = "";
+    spokenRef.current = "";
   };
 
   const openModal = () => {
